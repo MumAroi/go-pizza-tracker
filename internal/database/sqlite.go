@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"pizza-tracker/internal/orders"
+	"pizza-tracker/internal/order"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -14,7 +14,7 @@ func NewSQLiteDB(dbSourceName string) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	err = db.AutoMigrate(&orders.Order{}, &orders.OrderItem{})
+	err = db.AutoMigrate(&order.Order{}, &order.OrderItem{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
