@@ -3,8 +3,10 @@ module pizza-tracker
 go 1.26.4
 
 require (
+	github.com/caarlos0/env/v11 v11.4.1
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/joho/godotenv v1.5.1
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.2

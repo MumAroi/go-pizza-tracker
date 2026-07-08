@@ -1,7 +1,6 @@
-package validators
+package order
 
 import (
-	"pizza-tracker/internal/order"
 	"slices"
 
 	"github.com/gin-gonic/gin/binding"
@@ -14,8 +13,8 @@ func RegisterCustomValidators() {
 		return
 	}
 
-	v.RegisterValidation("valid_pizza_type", createSliceValidator(order.GetPizzaTypes()))
-	v.RegisterValidation("valid_pizza_size", createSliceValidator(order.GetPizzaSizes()))
+	v.RegisterValidation("valid_pizza_type", createSliceValidator(GetPizzaTypes()))
+	v.RegisterValidation("valid_pizza_size", createSliceValidator(GetPizzaSizes()))
 }
 
 func createSliceValidator(allowedValues []string) validator.Func {

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"pizza-tracker/internal/database"
 	"pizza-tracker/internal/order"
 
@@ -16,6 +17,11 @@ func NewApp(dbPath string) (*App, error) {
 	db, err := database.NewSQLiteDB(dbPath)
 	if err != nil {
 		return nil, err
+	}
+
+	err = db.AutoMigrate(&order.Order{}, &order.OrderItem{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
 
 	return &App{

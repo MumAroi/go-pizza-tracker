@@ -69,6 +69,7 @@ func (h *handler) ServeCustomer(c *gin.Context) {
 	orderID := c.Param("id")
 	if orderID == "" {
 		c.String(http.StatusBadRequest, "Order ID is required")
+		return
 	}
 
 	order, err := h.order.GetOrder(orderID)
