@@ -10,7 +10,7 @@ import (
 type Handler interface {
 	ServeNewOrderForm(c *gin.Context)
 	HandleNewOrderPost(c *gin.Context)
-	ServeStatus(c *gin.Context)
+	ServeInfo(c *gin.Context)
 }
 
 type handler struct {
@@ -62,10 +62,10 @@ func (h *handler) HandleNewOrderPost(c *gin.Context) {
 
 	slog.Info("Order created", "orderId", order.ID, "customer", order.CustomerName)
 
-	c.Redirect(http.StatusSeeOther, "/customer/"+order.ID)
+	c.Redirect(http.StatusSeeOther, "/orders/"+order.ID+"/status")
 }
 
-func (h *handler) ServeStatus(c *gin.Context) {
+func (h *handler) ServeInfo(c *gin.Context) {
 	orderID := c.Param("id")
 	if orderID == "" {
 		c.String(http.StatusBadRequest, "Order ID is required")
@@ -78,7 +78,7 @@ func (h *handler) ServeStatus(c *gin.Context) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "status.tmpl", CustomerData{
+	c.HTML(http.StatusOK, "info.tmpl", CustomerData{
 		Title:    "Pizza Order Status " + orderID,
 		Order:    *order,
 		Statuses: GetOrderStatuses(),

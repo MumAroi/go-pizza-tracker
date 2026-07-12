@@ -1,7 +1,6 @@
 package main
 
 import (
-	"html/template"
 	"log/slog"
 	"os"
 
@@ -9,6 +8,7 @@ import (
 	"pizza-tracker/internal/config"
 	"pizza-tracker/internal/order"
 	"pizza-tracker/internal/route"
+	"pizza-tracker/internal/shared/until"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -38,8 +38,7 @@ func main() {
 
 	router := gin.Default()
 
-	templ := template.Must(template.ParseGlob("templates/*.tmpl"))
-	router.SetHTMLTemplate(templ)
+	until.LoadTemplate(router)
 
 	route.SetupRoutes(router, app)
 
