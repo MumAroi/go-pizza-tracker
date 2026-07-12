@@ -1,7 +1,9 @@
 package main
 
 import (
-	"log"
+	"html/template"
+	"log/slog"
+	"os"
 
 	"pizza-tracker/internal/app"
 	"pizza-tracker/internal/config"
@@ -15,23 +17,30 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		slog.Error("Error loading .env file", "error", err)
+		os.Exit(1)
 	}
 
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatal("Error loading config")
+		slog.Error("Error loading config", "error", err)
+		os.Exit(1)
 	}
 
 	app, err := app.NewApp(cfg.DBPath)
 	if err != nil {
-		log.Fatal("Error creating app")
+		slog.Error("failed to create app", "error", err)
+		os.Exit(1)
 	}
 	defer app.Close()
 
 	order.RegisterCustomValidators()
 
 	router := gin.Default()
+
+	templ := template.Must(template.ParseGlob("templates/*.tmpl"))
+	router.SetHTMLTemplate(templ)
+
 	route.SetupRoutes(router, app)
 
 	router.Run(":" + cfg.Port)
