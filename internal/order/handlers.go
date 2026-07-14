@@ -17,8 +17,14 @@ type handler struct {
 	order OrderRepository
 }
 
-func NewHandler(order OrderRepository) Handler {
-	return &handler{order: order}
+type OrderDeps struct {
+	OrderRepo OrderRepository
+}
+
+func NewHandler(deps OrderDeps) Handler {
+	return &handler{
+		order: deps.OrderRepo,
+	}
 }
 
 func (h *handler) ServeNewOrderForm(c *gin.Context) {
@@ -62,7 +68,7 @@ func (h *handler) HandleNewOrderPost(c *gin.Context) {
 
 	slog.Info("Order created", "orderId", order.ID, "customer", order.CustomerName)
 
-	c.Redirect(http.StatusSeeOther, "/orders/"+order.ID+"/status")
+	c.Redirect(http.StatusSeeOther, "/orders/"+order.ID)
 }
 
 func (h *handler) ServeInfo(c *gin.Context) {
@@ -78,7 +84,7 @@ func (h *handler) ServeInfo(c *gin.Context) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "info.tmpl", CustomerData{
+	c.HTML(http.StatusOK, "info.tmpl", OrderInfoData{
 		Title:    "Pizza Order Status " + orderID,
 		Order:    *order,
 		Statuses: GetOrderStatuses(),

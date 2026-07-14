@@ -1,11 +1,11 @@
 package order
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func RegisterRoutes(router *gin.RouterGroup, repo OrderRepository) {
-	handler := NewHandler(repo)
-	router.GET("/:id", handler.ServeInfo)
-	router.GET("/", handler.ServeNewOrderForm)
-	router.POST("/", handler.HandleNewOrderPost)
-
+func RegisterRoutes(router *gin.RouterGroup, h Handler) {
+	router.GET("/:id", h.ServeInfo)
+	router.GET("/", h.ServeNewOrderForm)
+	router.POST("/", h.HandleNewOrderPost)
 }

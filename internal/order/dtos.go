@@ -1,6 +1,6 @@
 package order
 
-type CustomerData struct {
+type OrderInfoData struct {
 	Title    string
 	Order    Order
 	Statuses []string

@@ -8,7 +8,8 @@ import (
 	"pizza-tracker/internal/config"
 	"pizza-tracker/internal/order"
 	"pizza-tracker/internal/route"
-	"pizza-tracker/internal/shared/until"
+	"pizza-tracker/internal/session"
+	"pizza-tracker/internal/shared/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -38,9 +39,11 @@ func main() {
 
 	router := gin.Default()
 
-	until.LoadTemplate(router)
+	util.LoadTemplate(router)
 
-	route.SetupRoutes(router, app)
+	sessionStore := session.NewSessionStore(app.DB, []byte(cfg.SessionSecret))
+
+	route.SetupRoutes(router, sessionStore, app)
 
 	router.Run(":" + cfg.Port)
 }

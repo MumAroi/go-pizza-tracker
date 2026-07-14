@@ -3,8 +3,9 @@ package config
 import "github.com/caarlos0/env/v11"
 
 type Config struct {
-	Port   string `env:"PORT" envDefault:"8080"`
-	DBPath string `env:"DB_PATH" envDefault:""`
+	Port          string `env:"PORT" envDefault:"8080"`
+	DBPath        string `env:"DB_PATH" envDefault:""`
+	SessionSecret string `env:"SESSION_SECRET" envDefault:""`
 }
 
 func Load() (*Config, error) {
