@@ -5,15 +5,17 @@ import (
 	"log/slog"
 	"pizza-tracker/internal/database"
 	"pizza-tracker/internal/order"
+	"pizza-tracker/internal/shared/notification"
 	"pizza-tracker/internal/user"
 
 	"gorm.io/gorm"
 )
 
 type App struct {
-	DB        *gorm.DB
-	OrderRepo order.OrderRepository
-	UserRepo  user.UserRepository
+	DB              *gorm.DB
+	OrderRepo       order.OrderRepository
+	UserRepo        user.UserRepository
+	NotificationMgr *notification.NotificationManager
 }
 
 func NewApp(dbPath string) (*App, error) {
@@ -33,9 +35,10 @@ func NewApp(dbPath string) (*App, error) {
 	slog.Info("Admin user seeded successfully")
 
 	return &App{
-		DB:        db,
-		OrderRepo: order.NewOrderRepository(db),
-		UserRepo:  user.NewUserRepository(db),
+		DB:              db,
+		OrderRepo:       order.NewOrderRepository(db),
+		UserRepo:        user.NewUserRepository(db),
+		NotificationMgr: notification.NewNotificationManager(),
 	}, nil
 }
 

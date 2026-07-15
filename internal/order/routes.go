@@ -5,6 +5,7 @@ import (
 )
 
 func RegisterRoutes(router *gin.RouterGroup, h Handler) {
+	router.GET("/notifications", h.GetNotification)
 	router.GET("/:id", h.ServeInfo)
 	router.GET("/", h.ServeNewOrderForm)
 	router.POST("/", h.HandleNewOrderPost)

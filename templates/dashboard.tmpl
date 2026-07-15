@@ -32,7 +32,9 @@
                             <span class="text-xl">🔄</span>
                         </button>
                         <span id="lastFetched" class="text-sm text-gray-500 ml-4 font-medium"></span>
-                        <span id="newOrdersBadge" class="ml-2 text-xs font-semibold text-white bg-red-500 rounded-full px-3 py-1.5 hidden shadow-sm">0 new orders</span>
+                        <span id="newOrdersBadge"
+                            class="ml-2 text-xs font-semibold text-white bg-red-500 rounded-full px-3 py-1.5 hidden shadow-sm">0
+                            new orders</span>
                     </div>
                     <div class="w-full overflow-x-auto rounded-xl border border-gray-200">
                         <table class="w-full">
@@ -91,9 +93,10 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <div class="flex gap-2">
-                                            <form action="/admin/order/{{.ID}}/update" method="POST">
+                                            <form action="/admin/orders/{{.ID}}/update" method="POST">
                                                 <select name="status"
-                                                    class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all bg-white font-medium" onchange="this.form.submit()">
+                                                    class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all bg-white font-medium"
+                                                    onchange="this.form.submit()">
                                                     {{$currentStatus := .Status}}
                                                     {{range $.Statuses}}
                                                     <option {{if eq . $currentStatus}} selected {{end}} value="{{.}}">
@@ -101,7 +104,7 @@
                                                     {{end}}
                                                 </select>
                                             </form>
-                                            <form action="/admin/order/{{.ID}}/delete" method="POST">
+                                            <form action="/admin/orders/{{.ID}}/delete" method="POST">
                                                 <button type="submit"
                                                     class="p-2 text-white bg-red-500 rounded-lg hover:bg-red-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-400 transition-all"
                                                     onclick="return confirm('Are you sure you want to delete this order?')">
@@ -123,24 +126,24 @@
             </div>
         </div>
     </div>
-</div>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const updateTime = () => `Last updated on: ${new Date().toLocaleString()}`
-        const lastFetched = document.getElementById("lastFetched");
-        const newOrdersBadge = document.getElementById("newOrdersBadge")
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const updateTime = () => `Last updated on: ${new Date().toLocaleString()}`
+            const lastFetched = document.getElementById("lastFetched");
+            const newOrdersBadge = document.getElementById("newOrdersBadge")
 
-        lastFetched.textContent = updateTime();
-
-        let newOrdersCount = 0;
-        const eventSrc = new EventSource("/admin/notifications");
-        eventSrc.onmessage = e => {
-            newOrdersCount++;
-            newOrdersBadge.textContent = `${newOrdersCount} new order${newOrdersCount === 1 ? '' : 's'}`
-            newOrdersBadge.classList.remove("hidden");
             lastFetched.textContent = updateTime();
-        }
-        eventSrc.onerror = err => console.error("EventSource fialed:", err)
-    })
-</script>
-{{template "bottom" .}}
+
+            let newOrdersCount = 0;
+            const eventSrc = new EventSource("/admin/notifications");
+            eventSrc.onmessage = e => {
+                newOrdersCount++;
+                newOrdersBadge.textContent = `${newOrdersCount} new order${newOrdersCount === 1 ? '' : 's'}`
+                newOrdersBadge.classList.remove("hidden");
+                lastFetched.textContent = updateTime();
+            }
+            eventSrc.onerror = err => console.error("EventSource fialed:", err)
+        })
+    </script>
+    {{template "bottom" .}}

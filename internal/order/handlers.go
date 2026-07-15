@@ -3,6 +3,7 @@ package order
 import (
 	"log/slog"
 	"net/http"
+	"pizza-tracker/internal/shared/notification"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,19 +12,21 @@ type Handler interface {
 	ServeNewOrderForm(c *gin.Context)
 	HandleNewOrderPost(c *gin.Context)
 	ServeInfo(c *gin.Context)
+	GetNotification(c *gin.Context)
 }
 
 type handler struct {
-	order OrderRepository
+	OrderDeps
 }
 
 type OrderDeps struct {
-	OrderRepo OrderRepository
+	OrderRepo       OrderRepository
+	NotificationMgr *notification.NotificationManager
 }
 
 func NewHandler(deps OrderDeps) Handler {
 	return &handler{
-		order: deps.OrderRepo,
+		OrderDeps: deps,
 	}
 }
 
@@ -60,13 +63,15 @@ func (h *handler) HandleNewOrderPost(c *gin.Context) {
 		Items:        orderItems,
 	}
 
-	if err := h.order.CreateOrder(&order); err != nil {
+	if err := h.OrderRepo.CreateOrder(&order); err != nil {
 		slog.Error("Failed to create order", "error", err)
 		c.String(http.StatusInternalServerError, "Something went wrong")
 		return
 	}
 
 	slog.Info("Order created", "orderId", order.ID, "customer", order.CustomerName)
+
+	h.NotificationMgr.Notify("admin:new_orders", "new_orders")
 
 	c.Redirect(http.StatusSeeOther, "/orders/"+order.ID)
 }
@@ -78,7 +83,7 @@ func (h *handler) ServeInfo(c *gin.Context) {
 		return
 	}
 
-	order, err := h.order.GetOrder(orderID)
+	order, err := h.OrderRepo.GetOrder(orderID)
 	if err != nil {
 		c.String(http.StatusNotFound, "Order not found")
 		return
@@ -90,4 +95,31 @@ func (h *handler) ServeInfo(c *gin.Context) {
 		Statuses: GetOrderStatuses(),
 	})
 
+}
+
+func (h *handler) GetNotification(c *gin.Context) {
+	orderID := c.Query("orderId")
+
+	if orderID == "" {
+		c.String(400, "Invalid orderId")
+		return
+	}
+
+	_, err := h.OrderRepo.GetOrder(orderID)
+	if err != nil {
+		c.String(404, "Order not found")
+		return
+	}
+
+	key := "order:" + orderID
+	client := make(chan string, 10)
+
+	h.NotificationMgr.AddClient(key, client)
+
+	defer func() {
+		h.NotificationMgr.RemoveClient(key, client)
+		slog.Info("Customer client disconnected", "orderId", orderID)
+	}()
+
+	h.NotificationMgr.StreamSSE(c, client)
 }
